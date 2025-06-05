@@ -7,7 +7,8 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;            
 using Microsoft.Extensions.Configuration;        
 using Microsoft.Extensions.DependencyInjection; 
-using AutoMapper;                               
+using AutoMapper;
+using Domain.Interfaces;
 
 namespace Presentation.Extensions
 {
@@ -36,19 +37,17 @@ namespace Presentation.Extensions
 
         public static IServiceCollection AddInfrastructureServices(this IServiceCollection services, IConfiguration configuration)
         {
-            
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"))
             );
 
-            services.AddScoped<Domain.Interfaces.IAccountRepository, AccountRepository>();
-            services.AddScoped<Domain.Interfaces.IJournalEntryRepository, JournalEntryRepository>();
-            services.AddScoped<Domain.Interfaces.ITrialBalanceRepository, TrialBalanceRepository>();
-
-           
+            services.AddScoped<IAccountRepository, AccountRepository>();
+            services.AddScoped<IJournalEntryRepository, JournalEntryRepository>();
+            services.AddScoped<ITrialBalanceRepository, TrialBalanceRepository>();  // ← updated interface
             services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             return services;
         }
+
     }
 }

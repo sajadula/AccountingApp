@@ -154,19 +154,26 @@ namespace Infrastructure.Migrations
 
             // sp_GetTrialBalance
             migrationBuilder.Sql(@"
-        CREATE PROCEDURE sp_GetTrialBalance
-        AS
-        BEGIN
-            SELECT 
-                a.Name    AS AccountName,
-                a.Type    AS AccountType,
-                SUM(l.Debit - l.Credit) AS NetBalance
-            FROM Accounts a
-            INNER JOIN JournalEntryLines l ON a.AccountId = l.AccountId
-            GROUP BY a.Name, a.Type;
-        END
-    ");
-        }
+    CREATE PROCEDURE sp_GetTrialBalance
+    AS
+    BEGIN
+        SELECT
+            a.Name        AS AccountName,
+            a.Type        AS AccountType,
+            ISNULL(SUM(CASE WHEN l.Debit    IS NOT NULL THEN l.Debit   ELSE 0 END), 0) AS TotalDebit,
+            ISNULL(SUM(CASE WHEN l.Credit   IS NOT NULL THEN l.Credit  ELSE 0 END), 0) AS TotalCredit,
+            CASE
+                WHEN SUM(l.Debit - l.Credit) > 0 THEN 'Debit'
+                WHEN SUM(l.Debit - l.Credit) < 0 THEN 'Credit'
+                ELSE 'None'
+            END                                                   AS BalanceType,
+            ABS(SUM(l.Debit - l.Credit))                         AS BalanceAmount
+        FROM Accounts a
+        LEFT JOIN JournalEntryLines l 
+            ON a.AccountId = l.AccountId
+        GROUP BY a.Name, a.Type;
+    END
+");   }
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {

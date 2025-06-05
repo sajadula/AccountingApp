@@ -17,24 +17,39 @@ namespace Infrastructure.Persistence.Repositories
             _context = context;
         }
 
-        public async Task<IEnumerable<(string AccountName, string AccountType, decimal NetBalance)>> GetTrialBalanceAsync()
+        public async Task<IEnumerable<(string AccountName, string AccountType,
+                                       decimal TotalDebit, decimal TotalCredit,
+                                       string BalanceType, decimal BalanceAmount)>>
+            GetTrialBalanceAsync()
         {
-            var result = new List<(string, string, decimal)>();
+            var result = new List<(string, string, decimal, decimal, string, decimal)>();
 
+            // Create raw ADO command because we need to read multiple columns
             using var command = _context.Database.GetDbConnection().CreateCommand();
             command.CommandText = "sp_GetTrialBalance";
             command.CommandType = System.Data.CommandType.StoredProcedure;
 
             await _context.Database.OpenConnectionAsync();
+
             using var reader = await command.ExecuteReaderAsync();
             while (await reader.ReadAsync())
             {
-                var name = reader.GetString(0);
-                var type = reader.GetString(1);
-                var net = reader.GetDecimal(2);
-                result.Add((name, type, net));
+                var accountName = reader.GetString(0);        // AccountName
+                var accountType = reader.GetString(1);        // AccountType
+                var totalDebit = reader.GetDecimal(2);       // TotalDebit
+                var totalCredit = reader.GetDecimal(3);       // TotalCredit
+                var balanceType = reader.GetString(4);        // BalanceType
+                var balanceAmount = reader.GetDecimal(5);       // BalanceAmount
+
+                result.Add((accountName,
+                            accountType,
+                            totalDebit,
+                            totalCredit,
+                            balanceType,
+                            balanceAmount));
             }
 
+            await _context.Database.CloseConnectionAsync();
             return result;
         }
     }

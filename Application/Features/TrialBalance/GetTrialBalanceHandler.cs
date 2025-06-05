@@ -22,11 +22,15 @@ namespace Application.Features.TrialBalance
         public async Task<IEnumerable<TrialBalanceDto>> Handle(GetTrialBalanceQuery request, CancellationToken cancellationToken)
         {
             var raw = await _repository.GetTrialBalanceAsync();
+
             return raw.Select(x => new TrialBalanceDto
             {
                 AccountName = x.AccountName,
                 AccountType = x.AccountType,
-                NetBalance = x.NetBalance
+                TotalDebit = x.TotalDebit,
+                TotalCredit = x.TotalCredit,
+                BalanceType = x.BalanceType,
+                BalanceAmount = x.BalanceAmount
             });
         }
     }

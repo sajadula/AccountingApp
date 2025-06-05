@@ -9,6 +9,11 @@ namespace Domain.Interfaces
     /// Returns (AccountName, AccountType, NetBalance)
     public interface ITrialBalanceRepository
     {
-        Task<IEnumerable<(string AccountName, string AccountType, decimal NetBalance)>> GetTrialBalanceAsync();
+        Task<IEnumerable<(string AccountName,
+                           string AccountType,
+                           decimal TotalDebit,
+                           decimal TotalCredit,
+                           string BalanceType,
+                           decimal BalanceAmount)>> GetTrialBalanceAsync();
     }
 }

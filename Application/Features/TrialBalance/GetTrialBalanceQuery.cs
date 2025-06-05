@@ -8,5 +8,5 @@ using System.Threading.Tasks;
 
 namespace Application.Features.TrialBalance
 {
-    public record GetTrialBalanceQuery() : IRequest<IEnumerable<TrialBalanceDto>>;
+   public record GetTrialBalanceQuery() : IRequest<IEnumerable<TrialBalanceDto>>;
 }

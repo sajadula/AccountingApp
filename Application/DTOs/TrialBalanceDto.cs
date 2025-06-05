@@ -10,6 +10,9 @@ namespace Application.DTOs
     {
         public string AccountName { get; set; } = string.Empty;
         public string AccountType { get; set; } = string.Empty;
-        public decimal NetBalance { get; set; }
+        public decimal TotalDebit { get; set; }
+        public decimal TotalCredit { get; set; }
+        public string BalanceType { get; set; } = string.Empty; // "Debit", "Credit", or "None"
+        public decimal BalanceAmount { get; set; }
     }
 }
